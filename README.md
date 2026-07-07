@@ -1,68 +1,67 @@
-# Loop — Todo List App
+# Loop
 
-A pixel-faithful Next.js/React port of the "Loop" task manager design, backed by Supabase (Postgres + Auth with row-level security).
+A todo app built with Next.js and Supabase. The design is a direct port of an existing HTML/CSS mockup — same layout, same colors, same spacing, no reinterpretation.
+
+Live: https://loop-todo-app.vercel.app
 
 ## Stack
 
-- Next.js 15 (React 19, App Router)
-- Tailwind CSS v4 (layout utilities only — visual fidelity comes from inline styles matching the source design)
-- Supabase (`@supabase/ssr` + `@supabase/supabase-js`) for Auth and Postgres
-- Radix UI primitives (`Dialog`, `DropdownMenu`) for accessible modal/menu behavior
+- Next.js 15, React 19, App Router
+- Tailwind CSS v4 for layout only — colors, spacing, and typography come from inline styles copied from the source design, not a Tailwind theme
+- Supabase for auth and Postgres, using `@supabase/ssr` and `@supabase/supabase-js`
+- Radix UI for the dialog and dropdown menu (handles focus and keyboard behavior so we didn't have to)
 
-## Setup
+## Getting started
 
-1. **Create a Supabase project** at [supabase.com](https://supabase.com) (or use an existing one).
-2. **Run the schema**: open the SQL editor in your Supabase project and run `supabase/schema.sql`. This creates the `todos` table and its row-level security policies.
-3. **Disable email confirmation** (Authentication → Providers → Email → turn off "Confirm email"). This makes sign-up log the user in immediately, matching the app's design (there is no "check your email" screen in the mock).
-4. **Copy environment variables**:
+1. Create a Supabase project at [supabase.com](https://supabase.com).
+2. Open the SQL editor and run everything in `supabase/schema.sql`. This creates the `todos` table and its row-level security policies.
+3. Go to Authentication → Providers → Email and turn off "Confirm email." Without this, signing up won't log the user in right away — Supabase will wait for them to click a confirmation link first, which the UI doesn't have a screen for.
+4. Copy the env file and fill in your project's URL and anon key (Settings → API):
    ```bash
    cp .env.example .env.local
    ```
-   Fill in `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` from your Supabase project's Settings → API page.
-5. **Install and run**:
+5. Install and run:
    ```bash
    npm install
    npm run dev
    ```
-   Visit `http://localhost:3000`.
+
+Then open `http://localhost:3000`.
 
 ## Environment variables
 
-| Variable | Where to find it | Notes |
-| --- | --- | --- |
-| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API | Public, safe in client code |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API | Public, RLS is the real security boundary |
+| Variable | Where to get it |
+| --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase → Settings → API |
 
-No service-role key is used anywhere in this app — all data access goes through the anon key and is enforced by Postgres row-level security.
+Both are safe to expose to the browser. There's no service-role key anywhere in this project — every request goes through the anon key, and row-level security in Postgres decides what it can actually see or touch.
 
-## Docker (local parity)
+## Running with Docker
 
 ```bash
 docker compose up --build
 ```
 
-Requires a `.env` file (or exported shell variables) with the same two `NEXT_PUBLIC_*` values as `.env.local`.
+You'll need a `.env` file next to `docker-compose.yml` with the same two variables as `.env.local`.
 
-## Deploying to Vercel
+## Deploying
 
-1. Push this repository to GitHub (already done if you're reading this from the repo).
-2. In the Vercel dashboard, import the repository.
-3. Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` as Environment Variables (Production + Preview).
-4. Deploy. Vercel builds with `next build` automatically; no extra configuration is required.
+The live version runs on Vercel, connected to this repo's `main` branch. To deploy your own:
 
-## Design fidelity
+1. Import the repo in the Vercel dashboard.
+2. Add the two environment variables above under Production and Preview.
+3. Deploy — Vercel picks up the Next.js build automatically, nothing else to configure.
 
-The UI is a 1:1 port of `Loop Todo App.dc.html` — colors, spacing, font sizes, and animations are copied verbatim as inline styles rather than reinterpreted through Tailwind/shadcn defaults. Two intentional behavior changes from the original mock (which stored everything in `localStorage`):
+## What's different from the original mockup
 
-- Auth and task data are now backed by Supabase instead of `localStorage`, with per-user isolation enforced by RLS.
-- Modal/dialog Escape-to-close and outside-click-to-close are handled by Radix UI primitives instead of a manual `keydown` listener — same user-visible behavior, less code.
+The mockup stored everything in `localStorage` and had no real backend. Two things changed to make it a real app:
 
-## Manual verification
+- Auth and tasks are now backed by Supabase instead of `localStorage`. Row-level security means each user only ever sees their own tasks — this isn't just hidden in the UI, it's enforced by Postgres, and it was tested with two separate accounts to confirm one couldn't see the other's data.
+- Closing a modal with Escape or a click outside is handled by Radix's `Dialog` component instead of a manual keydown listener. Same behavior, fewer moving parts.
 
-There is no automated test suite in this project (by design — see the implementation plan). Before considering a change complete, manually verify in the browser:
+Everything else — colors, spacing, font sizes, animations — is copied straight from the original design.
 
-- Sign up, log in, log out
-- Add / edit / delete a task
-- Toggle complete/incomplete on a task and a subtask
-- Search and filter by status/priority/tag
-- Confirm a second account cannot see the first account's tasks (see the plan's Task 18 for the exact steps)
+## Testing
+
+There's no automated test suite. Everything was verified by hand: signup and login, creating/editing/deleting tasks, toggling completion, searching and filtering, drag-to-reorder, and the two-account isolation check mentioned above. If you're changing something, the safest bet is to run through those flows again in the browser before calling it done.
