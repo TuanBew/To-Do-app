@@ -228,17 +228,13 @@ export function TodoProvider({ children }: { children: ReactNode }) {
 
   const toggleSubtask = useCallback(
     (taskId: string, subId: string) => {
-      let nextSubtasks: Subtask[] = [];
-      setTodos((cur) =>
-        cur.map((t) => {
-          if (t.id !== taskId) return t;
-          nextSubtasks = t.subtasks.map((s) => (s.id === subId ? { ...s, done: !s.done } : s));
-          return { ...t, subtasks: nextSubtasks };
-        })
-      );
+      const task = todos.find((t) => t.id === taskId);
+      if (!task) return;
+      const nextSubtasks = task.subtasks.map((s) => (s.id === subId ? { ...s, done: !s.done } : s));
+      setTodos((cur) => cur.map((t) => (t.id === taskId ? { ...t, subtasks: nextSubtasks } : t)));
       void updateTodoRow(supabase, taskId, { subtasks: nextSubtasks });
     },
-    [supabase]
+    [supabase, todos]
   );
 
   const askDelete = useCallback((id: string) => setDeleteConfirmId(id), []);
@@ -343,9 +339,13 @@ export function TodoProvider({ children }: { children: ReactNode }) {
       }
       if (modalMode === "add") {
         (async () => {
-          const nextOrder = (await maxSortOrder(supabase, user.id)) + 1;
-          const created = await insertTodo(supabase, user.id, { ...draft, order: nextOrder });
-          setTodos((cur) => [created, ...cur]);
+          try {
+            const nextOrder = (await maxSortOrder(supabase, user.id)) + 1;
+            const created = await insertTodo(supabase, user.id, { ...draft, order: nextOrder });
+            setTodos((cur) => [created, ...cur]);
+          } catch {
+            showToast("Failed to add task", "danger");
+          }
         })();
       } else if (draft.id) {
         const id = draft.id;
