@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Todo, TodoDraft } from "@/lib/types";
+import { validateTaskInput } from "@/lib/utils";
 
 interface TodoRow {
   id: string;
@@ -15,6 +16,15 @@ interface TodoRow {
 }
 
 const COLUMNS = "id,title,description,priority,due_date,tags,subtasks,done,sort_order,created_at";
+
+function assertValidTodoInput(input: {
+  description?: string;
+  tags?: string[];
+  subtasks?: { text: string }[];
+}): void {
+  const error = validateTaskInput(input);
+  if (error) throw new Error(error);
+}
 
 function rowToTodo(row: TodoRow): Todo {
   return {
@@ -42,6 +52,7 @@ export async function fetchTodos(supabase: SupabaseClient, userId: string): Prom
 }
 
 export async function insertTodo(supabase: SupabaseClient, userId: string, draft: TodoDraft): Promise<Todo> {
+  assertValidTodoInput(draft);
   const { data, error } = await supabase
     .from("todos")
     .insert({
@@ -75,6 +86,11 @@ export async function updateTodoRow(
     sort_order?: number;
   }
 ) {
+  assertValidTodoInput({
+    description: patch.description,
+    tags: patch.tags,
+    subtasks: patch.subtasks,
+  });
   const { error } = await supabase.from("todos").update(patch).eq("id", id);
   if (error) throw error;
 }

@@ -13,7 +13,7 @@ import {
 import { useAuth } from "@/lib/auth-context";
 import { createClient } from "@/lib/supabase/client";
 import { fetchTodos, insertTodo, updateTodoRow, deleteTodoRow, maxSortOrder } from "@/lib/supabase/todos";
-import { filterTasks, sortTasks, computeCounts, validateTitle, todayISO } from "@/lib/utils";
+import { filterTasks, sortTasks, computeCounts, validateTitle, validateTaskInput, todayISO } from "@/lib/utils";
 import type { Priority, SortKey, Subtask, Todo, TodoDraft, ToastState, ViewKey, PriorityFilter } from "@/lib/types";
 
 const PAGE_SIZE = 6;
@@ -337,6 +337,11 @@ export function TodoProvider({ children }: { children: ReactNode }) {
         showToast(titleError, "danger");
         return;
       }
+      const inputError = validateTaskInput(draft);
+      if (inputError) {
+        showToast(inputError, "danger");
+        return;
+      }
       if (modalMode === "add") {
         (async () => {
           try {
@@ -365,7 +370,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
               : t
           )
         );
-        void updateTodoRow(supabase, id, {
+        updateTodoRow(supabase, id, {
           title: draft.title.trim(),
           description: draft.description,
           priority: draft.priority,
@@ -373,7 +378,7 @@ export function TodoProvider({ children }: { children: ReactNode }) {
           tags: draft.tags,
           subtasks: draft.subtasks,
           done: draft.done,
-        });
+        }).catch(() => showToast("Failed to save changes", "danger"));
       }
       setModalOpen(false);
       setDraft(null);

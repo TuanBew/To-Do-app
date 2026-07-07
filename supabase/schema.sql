@@ -3,15 +3,24 @@
 
 create extension if not exists "pgcrypto";
 
+-- Check constraints can't contain subqueries, so tag-length validation lives in
+-- this helper function instead of an inline `unnest(...)` subquery.
+create or replace function public.tags_within_length(tags text[], max_len integer)
+returns boolean as $$
+  select coalesce(max(char_length(t)), 0) <= max_len from unnest(tags) as t;
+$$ language sql immutable
+set search_path = '';
+
 create table if not exists public.todos (
   id uuid primary key default gen_random_uuid(),
   user_id uuid not null references auth.users(id) on delete cascade,
   title text not null check (char_length(btrim(title)) > 0 and char_length(title) <= 200),
-  description text not null default '',
+  description text not null default '' check (char_length(description) <= 2000),
   priority text not null default 'medium' check (priority in ('low', 'medium', 'high')),
   due_date date,
-  tags text[] not null default '{}',
-  subtasks jsonb not null default '[]',
+  tags text[] not null default '{}'
+    check (cardinality(tags) <= 20 and public.tags_within_length(tags, 40)),
+  subtasks jsonb not null default '[]' check (jsonb_array_length(subtasks) <= 50),
   done boolean not null default false,
   sort_order integer not null default 0,
   created_at timestamptz not null default now(),

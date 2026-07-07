@@ -3,6 +3,12 @@ import { twMerge } from "tailwind-merge";
 import { TAG_PALETTE, PRIORITY_META } from "./theme";
 import type { Priority, Todo, ViewKey, SortKey, PriorityFilter } from "./types";
 
+export const MAX_DESCRIPTION_LENGTH = 2000;
+export const MAX_TAGS = 20;
+export const MAX_TAG_LENGTH = 40;
+export const MAX_SUBTASKS = 50;
+export const MAX_SUBTASK_TEXT_LENGTH = 200;
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -86,5 +92,29 @@ export function validateTitle(title: string): string | null {
   const trimmed = title.trim();
   if (!trimmed) return "Give the task a title";
   if (trimmed.length > 200) return "Title must be 200 characters or fewer";
+  return null;
+}
+
+/** Shared caps for description/tags/subtasks, enforced client-side and again in the data layer. */
+export function validateTaskInput(input: {
+  description?: string;
+  tags?: string[];
+  subtasks?: { text: string }[];
+}): string | null {
+  if (input.description !== undefined && input.description.length > MAX_DESCRIPTION_LENGTH) {
+    return `Description must be ${MAX_DESCRIPTION_LENGTH} characters or fewer`;
+  }
+  if (input.tags !== undefined) {
+    if (input.tags.length > MAX_TAGS) return `A task can have at most ${MAX_TAGS} tags`;
+    if (input.tags.some((tag) => tag.length > MAX_TAG_LENGTH)) {
+      return `Tags must be ${MAX_TAG_LENGTH} characters or fewer`;
+    }
+  }
+  if (input.subtasks !== undefined) {
+    if (input.subtasks.length > MAX_SUBTASKS) return `A task can have at most ${MAX_SUBTASKS} subtasks`;
+    if (input.subtasks.some((s) => s.text.length > MAX_SUBTASK_TEXT_LENGTH)) {
+      return `Subtask text must be ${MAX_SUBTASK_TEXT_LENGTH} characters or fewer`;
+    }
+  }
   return null;
 }

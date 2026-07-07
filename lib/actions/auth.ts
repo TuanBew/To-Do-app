@@ -1,13 +1,22 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { rateLimit } from "@/lib/rate-limit";
 
 export interface AuthActionState {
   error: string;
 }
 
 const EMAIL_RE = /^\S+@\S+\.\S+$/;
+const AUTH_ATTEMPT_LIMIT = 10;
+const AUTH_ATTEMPT_WINDOW_MS = 60_000;
+
+async function clientIp(): Promise<string> {
+  const h = await headers();
+  return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || "unknown";
+}
 
 export async function signInAction(
   _prevState: AuthActionState,
@@ -18,6 +27,11 @@ export async function signInAction(
 
   if (!email || !EMAIL_RE.test(email)) return { error: "Enter a valid email address." };
   if (!password) return { error: "Enter your password." };
+
+  const ip = await clientIp();
+  if (!rateLimit(`signin:${ip}:${email}`, AUTH_ATTEMPT_LIMIT, AUTH_ATTEMPT_WINDOW_MS)) {
+    return { error: "Too many attempts. Wait a minute and try again." };
+  }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -37,8 +51,13 @@ export async function signUpAction(
 
   if (!name) return { error: "Enter your name." };
   if (!email || !EMAIL_RE.test(email)) return { error: "Enter a valid email address." };
-  if (password.length < 6) return { error: "Password must be at least 6 characters." };
+  if (password.length < 8) return { error: "Password must be at least 8 characters." };
   if (password !== confirm) return { error: "Passwords do not match." };
+
+  const ip = await clientIp();
+  if (!rateLimit(`signup:${ip}`, AUTH_ATTEMPT_LIMIT, AUTH_ATTEMPT_WINDOW_MS)) {
+    return { error: "Too many attempts. Wait a minute and try again." };
+  }
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
