@@ -45,7 +45,8 @@ begin
   new.updated_at = now();
   return new;
 end;
-$$ language plpgsql;
+$$ language plpgsql
+set search_path = '';
 
 drop trigger if exists todos_set_updated_at on public.todos;
 create trigger todos_set_updated_at
