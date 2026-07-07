@@ -39,3 +39,10 @@ export const SORT_OPTIONS: { key: SortKey; label: string }[] = [
 ];
 
 export const PRESET_TAGS = ["Work", "Personal", "Design", "Marketing", "Learning", "Health", "Home"];
+
+export const VIEW_TITLES: Record<string, string> = {
+  all: "All Tasks",
+  today: "Today",
+  upcoming: "Upcoming",
+  completed: "Completed",
+};
