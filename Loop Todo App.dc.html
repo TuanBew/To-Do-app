@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    input, textarea, select, button { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+    input:focus, textarea:focus, select:focus { outline: none; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleIn { from { opacity: 0; transform: scale(0.96) translateY(6px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes toastIn { from { opacity: 0; transform: translateY(14px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes drawerIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    @keyframes popCheck { 0% { transform: scale(0.5); } 55% { transform: scale(1.2); } 100% { transform: scale(1); } }
+    @keyframes tagPulse { 0% { transform: scale(1.08); } 60% { transform: scale(0.98); } 100% { transform: scale(1); } }
+  </style>
+</helmet>
+<div style="min-height: 100vh; width: 100%; background: #faf9f6; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #22201c; position: relative; overflow-x: hidden;">
+
+  <sc-if value="{{ isAuthScreen }}" hint-placeholder-val="{{ true }}">
+    <div style="display: flex; min-height: 100vh; flex-wrap: wrap;">
+      <div style="flex: 1 1 420px; max-width: 560px; background: {{ accent }}; position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: 56px; color: #ffffff; overflow: hidden; min-height: 320px;">
+        <div style="position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.16) 1.5px, transparent 1.5px); background-size: 22px 22px; opacity: 0.6;"></div>
+        <div style="position: relative; display: flex; align-items: center; gap: 10px;">
+          <div style="width: 34px; height: 34px; border-radius: 50%; border: 2.5px solid #ffffff; position: relative; flex-shrink: 0;">
+            <div style="position: absolute; width: 15px; height: 15px; border-radius: 50%; background: {{ accent }}; border: 2.5px solid #ffffff; top: 8px; left: 8px;"></div>
+          </div>
+          <span style="font-size: 20px; font-weight: 700; letter-spacing: -0.01em;">Loop</span>
+        </div>
+        <div style="position: relative; max-width: 420px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.8; margin-bottom: 14px;">Task management, refined</div>
+          <div style="font-size: 34px; line-height: 1.28; font-weight: 700; letter-spacing: -0.01em;">Plan your day. Track what matters. Finish what you start.</div>
+        </div>
+        <div style="position: relative; font-family: 'IBM Plex Mono', monospace; font-size: 12px; opacity: 0.7;">© 2026 Loop</div>
+      </div>
+      <div style="flex: 1 1 420px; display: flex; align-items: center; justify-content: center; padding: 40px 24px;">
+        <div style="width: 100%; max-width: 380px;">
+
+          <sc-if value="{{ isLoginScreen }}" hint-placeholder-val="{{ true }}">
+            <div style="animation: slideUp 0.35s ease-out;">
+              <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px;">Welcome back</div>
+              <div style="font-size: 14px; color: #77716a; margin-bottom: 32px;">Log in to continue to your workspace.</div>
+              <form onSubmit="{{ submitLogin }}">
+                <div style="margin-bottom: 16px;">
+                  <label style="display: block; font-size: 12.5px; font-weight: 600; color: #4a453e; margin-bottom: 6px;">Email</label>
+                  <input type="email" value="{{ authEmail }}" onChange="{{ setAuthEmail }}" placeholder="you@company.com" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 14.5px; transition: border-color .15s ease;" style-focus="border-color: {{ accent }};" />
+                </div>
+                <div style="margin-bottom: 8px;">
+                  <label style="display: block; font-size: 12.5px; font-weight: 600; color: #4a453e; margin-bottom: 6px;">Password</label>
+                  <input type="password" value="{{ authPassword }}" onChange="{{ setAuthPassword }}" placeholder="••••••••" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 14.5px; transition: border-color .15s ease;" style-focus="border-color: {{ accent }};" />
+                </div>
+                <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size: 13px; color: #c0392b; margin: 10px 0 4px; animation: fadeIn 0.2s ease;">{{ authError }}</div>
+                </sc-if>
+                <button type="submit" style="width: 100%; margin-top: 18px; padding: 12px; border-radius: 8px; border: none; background: {{ accent }}; color: #ffffff; font-size: 14.5px; font-weight: 600; cursor: pointer; transition: filter .15s ease, transform .1s ease;" style-hover="filter: brightness(0.93);" style-active="transform: scale(0.98);">Log in</button>
+              </form>
+              <div style="text-align: center; margin-top: 22px; font-size: 13.5px; color: #77716a;">
+                Don't have an account? <span onClick="{{ goToSignup }}" style="color: {{ accent }}; font-weight: 600; cursor: pointer;">Sign up</span>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ isSignupScreen }}" hint-placeholder-val="{{ false }}">
+            <div style="animation: slideUp 0.35s ease-out;">
+              <div style="font-size: 26px; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 6px;">Create your account</div>
+              <div style="font-size: 14px; color: #77716a; margin-bottom: 28px;">Start organizing your work in minutes.</div>
+              <form onSubmit="{{ submitSignup }}">
+                <div style="margin-bottom: 14px;">
+                  <label style="display: block; font-size: 12.5px; font-weight: 600; color: #4a453e; margin-bottom: 6px;">Name</label>
+                  <input type="text" value="{{ authName }}" onChange="{{ setAuthName }}" placeholder="Ada Lovelace" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 14.5px;" style-focus="border-color: {{ accent }};" />
+                </div>
+                <div style="margin-bottom: 14px;">
+                  <label style="display: block; font-size: 12.5px; font-weight: 600; color: #4a453e; margin-bottom: 6px;">Email</label>
+                  <input type="email" value="{{ authEmail }}" onChange="{{ setAuthEmail }}" placeholder="you@company.com" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 14.5px;" style-focus="border-color: {{ accent }};" />
+                </div>
+                <div style="display: flex; gap: 12px; margin-bottom: 8px;">
+                  <div style="flex: 1;">
+                    <label style="display: block; font-size: 12.5px; font-weight: 600; color: #4a453e; margin-bottom: 6px;">Password</label>
+                    <input type="password" value="{{ authPassword }}" onChange="{{ setAuthPassword }}" placeholder="6+ characters" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 14.5px;" style-focus="border-color: {{ accent }};" />
+                  </div>
+                  <div style="flex: 1;">
+                    <label style="display: block; font-size: 12.5px; font-weight: 600; color: #4a453e; margin-bottom: 6px;">Confirm</label>
+                    <input type="password" value="{{ authConfirm }}" onChange="{{ setAuthConfirm }}" placeholder="Repeat it" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 14.5px;" style-focus="border-color: {{ accent }};" />
+                  </div>
+                </div>
+                <sc-if value="{{ hasAuthError }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size: 13px; color: #c0392b; margin: 10px 0 4px; animation: fadeIn 0.2s ease;">{{ authError }}</div>
+                </sc-if>
+                <button type="submit" style="width: 100%; margin-top: 18px; padding: 12px; border-radius: 8px; border: none; background: {{ accent }}; color: #ffffff; font-size: 14.5px; font-weight: 600; cursor: pointer; transition: filter .15s ease, transform .1s ease;" style-hover="filter: brightness(0.93);" style-active="transform: scale(0.98);">Create account</button>
+              </form>
+              <div style="text-align: center; margin-top: 22px; font-size: 13.5px; color: #77716a;">
+                Already have an account? <span onClick="{{ goToLogin }}" style="color: {{ accent }}; font-weight: 600; cursor: pointer;">Log in</span>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ isAppScreen }}" hint-placeholder-val="{{ false }}">
+    <div style="display: flex; min-height: 100vh;">
+
+      <sc-if value="{{ showDesktopSidebar }}" hint-placeholder-val="{{ true }}">
+        <div style="width: 240px; flex-shrink: 0; background: #f3f1ec; border-right: 1px solid #e7e3da; display: flex; flex-direction: column; padding: 18px 12px 14px; position: sticky; top: 0; height: 100vh;">
+          <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px 20px;">
+            <div style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid {{ accent }}; position: relative; flex-shrink: 0;">
+              <div style="position: absolute; width: 12px; height: 12px; border-radius: 50%; background: {{ accent }}; top: 5px; left: 5px;"></div>
+            </div>
+            <span style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Loop</span>
+          </div>
+          <div onClick="{{ openAdd }}" style="display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 0; border-radius: 8px; background: {{ accent }}; color: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer; margin-bottom: 18px; transition: filter .15s ease;" style-hover="filter: brightness(0.93);">
+            <svg width="12" height="12" viewBox="0 0 12 12"><rect x="5" y="0" width="2" height="12" fill="#ffffff"></rect><rect x="0" y="5" width="12" height="2" fill="#ffffff"></rect></svg>
+            New Task
+          </div>
+          <sc-for list="{{ navItems }}" as="navi" hint-placeholder-count="4">
+            <div onClick="{{ navi.onClick }}" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 7px; cursor: pointer; margin-bottom: 2px; background: {{ navi.bg }}; transition: background .12s ease;" style-hover="background: {{ accentSofter }};">
+              <span style="font-size: 13.5px; font-weight: {{ navi.weight }}; color: {{ navi.color }};">{{ navi.label }}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9a9488;">{{ navi.count }}</span>
+            </div>
+          </sc-for>
+          <div style="height: 1px; background: #e7e3da; margin: 14px 4px;"></div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: #9a9488; padding: 0 10px 8px; text-transform: uppercase;">Tags</div>
+          <div style="flex: 1; overflow-y: auto; min-height: 0;">
+            <sc-if value="{{ hasTags }}" hint-placeholder-val="{{ false }}">
+              <sc-for list="{{ allTagChips }}" as="tgi" hint-placeholder-count="4">
+                <div onClick="{{ tgi.onClick }}" onDragOver="{{ tgi.onDragOver }}" onDragLeave="{{ tgi.onDragLeave }}" onDrop="{{ tgi.onDrop }}" style="display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 7px; cursor: pointer; background: {{ tgi.navBg }}; box-shadow: {{ tgi.ringStyle }}; transform: {{ tgi.scaleStyle }}; animation: {{ tgi.pulseAnim }}; transition: background .12s ease, transform .12s ease, box-shadow .12s ease;" style-hover="background: {{ accentSofter }};">
+                  <div style="width: 7px; height: 7px; border-radius: 50%; background: {{ tgi.fg }}; flex-shrink: 0;"></div>
+                  <span style="font-size: 13px; color: #4a453e; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ tgi.name }}</span>
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #9a9488;">{{ tgi.count }}</span>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{ hasNoTags }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size: 12px; color: #9a9488; padding: 4px 10px;">No tags yet</div>
+            </sc-if>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px 8px 4px; border-top: 1px solid #e7e3da; margin-top: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: {{ accent }}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;">{{ userInitial }}</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ userName }}</div>
+              <div style="font-size: 11.5px; color: #9a9488; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ userEmail }}</div>
+            </div>
+            <div onClick="{{ logout }}" title="Log out" style="width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;" style-hover="background: #ece8e0;">
+              <svg width="13" height="13" viewBox="0 0 13 13"><path d="M5 1H2C1.5 1 1 1.5 1 2V11C1 11.5 1.5 12 2 12H5M8.5 9L12 5.5M12 5.5L8.5 2M12 5.5H4.5" stroke="#77716a" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMobileDrawer }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeMobileNav }}" style="position: fixed; inset: 0; background: rgba(20,18,14,0.35); z-index: 40; animation: fadeIn 0.2s ease;"></div>
+        <div style="position: fixed; top: 0; left: 0; bottom: 0; width: 260px; background: #f3f1ec; z-index: 41; padding: 18px 12px 14px; display: flex; flex-direction: column; animation: drawerIn 0.22s ease-out; box-shadow: 8px 0 24px rgba(0,0,0,0.12);">
+          <div style="display: flex; align-items: center; gap: 9px; padding: 6px 8px 20px;">
+            <div style="width: 26px; height: 26px; border-radius: 50%; border: 2px solid {{ accent }}; position: relative; flex-shrink: 0;">
+              <div style="position: absolute; width: 12px; height: 12px; border-radius: 50%; background: {{ accent }}; top: 5px; left: 5px;"></div>
+            </div>
+            <span style="font-size: 16px; font-weight: 700; letter-spacing: -0.01em;">Loop</span>
+          </div>
+          <div onClick="{{ openAdd }}" style="display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 0; border-radius: 8px; background: {{ accent }}; color: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer; margin-bottom: 18px;">
+            <svg width="12" height="12" viewBox="0 0 12 12"><rect x="5" y="0" width="2" height="12" fill="#ffffff"></rect><rect x="0" y="5" width="12" height="2" fill="#ffffff"></rect></svg>
+            New Task
+          </div>
+          <sc-for list="{{ navItems }}" as="navi" hint-placeholder-count="4">
+            <div onClick="{{ navi.onClick }}" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-radius: 7px; cursor: pointer; margin-bottom: 2px; background: {{ navi.bg }};">
+              <span style="font-size: 13.5px; font-weight: {{ navi.weight }}; color: {{ navi.color }};">{{ navi.label }}</span>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9a9488;">{{ navi.count }}</span>
+            </div>
+          </sc-for>
+          <div style="height: 1px; background: #e7e3da; margin: 14px 4px;"></div>
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.05em; color: #9a9488; padding: 0 10px 8px; text-transform: uppercase;">Tags</div>
+          <div style="flex: 1; overflow-y: auto; min-height: 0;">
+            <sc-for list="{{ allTagChips }}" as="tgi" hint-placeholder-count="4">
+              <div onClick="{{ tgi.onClick }}" onDragOver="{{ tgi.onDragOver }}" onDragLeave="{{ tgi.onDragLeave }}" onDrop="{{ tgi.onDrop }}" style="display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-radius: 7px; cursor: pointer; background: {{ tgi.navBg }}; box-shadow: {{ tgi.ringStyle }}; transform: {{ tgi.scaleStyle }}; animation: {{ tgi.pulseAnim }}; transition: background .12s ease, transform .12s ease, box-shadow .12s ease;">
+                <div style="width: 7px; height: 7px; border-radius: 50%; background: {{ tgi.fg }}; flex-shrink: 0;"></div>
+                <span style="font-size: 13px; color: #4a453e; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ tgi.name }}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: #9a9488;">{{ tgi.count }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display: flex; align-items: center; gap: 10px; padding: 12px 8px 4px; border-top: 1px solid #e7e3da; margin-top: 10px;">
+            <div style="width: 32px; height: 32px; border-radius: 50%; background: {{ accent }}; color: #ffffff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0;">{{ userInitial }}</div>
+            <div style="flex: 1; min-width: 0;">
+              <div style="font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ userName }}</div>
+              <div style="font-size: 11.5px; color: #9a9488; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ userEmail }}</div>
+            </div>
+            <div onClick="{{ logout }}" title="Log out" style="width: 28px; height: 28px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;">
+              <svg width="13" height="13" viewBox="0 0 13 13"><path d="M5 1H2C1.5 1 1 1.5 1 2V11C1 11.5 1.5 12 2 12H5M8.5 9L12 5.5M12 5.5L8.5 2M12 5.5H4.5" stroke="#77716a" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <div style="flex: 1; min-width: 0; display: flex; flex-direction: column;">
+
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-bottom: 1px solid #ece8e0; position: sticky; top: 0; background: #faf9f6; z-index: 20;">
+            <div onClick="{{ openMobileNav }}" style="cursor: pointer; width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid #e4e0d8; flex-shrink: 0;">
+              <svg width="16" height="12" viewBox="0 0 16 12"><rect width="16" height="2" fill="#4a453e"></rect><rect y="5" width="16" height="2" fill="#4a453e"></rect><rect y="10" width="16" height="2" fill="#4a453e"></rect></svg>
+            </div>
+            <div style="font-size: 16px; font-weight: 700;">{{ viewTitle }}</div>
+          </div>
+        </sc-if>
+
+        <div style="flex: 1; padding: {{ contentPadding }}; max-width: 920px; width: 100%; margin: 0 auto;">
+
+          <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; gap: 12px; flex-wrap: wrap;">
+              <div style="font-size: 26px; font-weight: 800; letter-spacing: -0.02em;">{{ viewTitle }}</div>
+              <div onClick="{{ openAdd }}" style="display: flex; align-items: center; gap: 7px; padding: 10px 18px; border-radius: 9px; background: {{ accent }}; color: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer; transition: filter .15s ease;" style-hover="filter: brightness(0.93);">
+                <svg width="12" height="12" viewBox="0 0 12 12"><rect x="5" width="2" height="12" fill="#ffffff"></rect><rect y="5" width="12" height="2" fill="#ffffff"></rect></svg>
+                New Task
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showStatsBar }}" hint-placeholder-val="{{ true }}">
+            <div style="display: flex; align-items: center; gap: 12px; margin: 12px 0 22px;">
+              <div style="font-size: 12.5px; color: #77716a; font-family: 'IBM Plex Mono', monospace; white-space: nowrap;">{{ completedCount }}/{{ totalCount }} done</div>
+              <div style="flex: 1; height: 5px; background: #ece8e0; border-radius: 3px; overflow: hidden;">
+                <div style="height: 100%; width: {{ completionPercent }}%; background: {{ accent }}; border-radius: 3px; transition: width .3s ease;"></div>
+              </div>
+            </div>
+          </sc-if>
+
+          <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 8px;">
+            <div style="position: relative; flex: 1; min-width: 200px;">
+              <svg width="14" height="14" viewBox="0 0 14 14" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="6" cy="6" r="5" stroke="#9a9488" stroke-width="1.3" fill="none"></circle><path d="M9.5 9.5L13 13" stroke="#9a9488" stroke-width="1.3" stroke-linecap="round"></path></svg>
+              <input type="text" value="{{ search }}" onChange="{{ setSearch }}" placeholder="Search tasks..." style="width: 100%; padding: 9px 12px 9px 34px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 13.5px; transition: border-color .15s ease;" style-focus="border-color: {{ accent }};" />
+            </div>
+            <div style="display: flex; background: #f0ede6; border-radius: 8px; padding: 3px; gap: 2px;">
+              <sc-for list="{{ priorityOptions }}" as="po" hint-placeholder-count="4">
+                <div onClick="{{ po.onClick }}" style="padding: 7px 12px; border-radius: 6px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ po.bg }}; color: {{ po.color }}; box-shadow: {{ po.shadow }}; transition: all .12s ease; white-space: nowrap;">{{ po.label }}</div>
+              </sc-for>
+            </div>
+            <div style="position: relative;">
+              <div onClick="{{ toggleSortMenu }}" style="display: flex; align-items: center; gap: 8px; padding: 9px 12px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 13px; font-weight: 500; background: #ffffff; cursor: pointer; white-space: nowrap; transition: border-color .12s ease;" style-hover="border-color: #d0cbc0;">
+                <svg width="12" height="10" viewBox="0 0 12 10"><path d="M1 2H8M1 5H6M1 8H4" stroke="#8a8478" stroke-width="1.3" stroke-linecap="round"></path></svg>
+                <span style="color: #4a453e;">Sort: <span style="font-weight: 600; color: #22201c;">{{ sortLabel }}</span></span>
+                <svg width="9" height="9" viewBox="0 0 9 9" style="transform: {{ sortChevronTransform }}; transition: transform .15s ease;"><path d="M1 3L4.5 6.5L8 3" stroke="#8a8478" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <sc-if value="{{ sortMenuOpen }}" hint-placeholder-val="{{ false }}">
+                <div onClick="{{ closeSortMenu }}" style="position: fixed; inset: 0; z-index: 29;"></div>
+                <div style="position: absolute; top: calc(100% + 6px); right: 0; z-index: 30; background: #ffffff; border: 1px solid #e7e3da; border-radius: 10px; box-shadow: 0 10px 30px rgba(20,18,14,0.12); padding: 6px; min-width: 168px; animation: scaleIn 0.14s ease-out;">
+                  <sc-for list="{{ sortOptionsDecorated }}" as="so" hint-placeholder-count="5">
+                    <div onClick="{{ so.onClick }}" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: {{ so.weight }}; color: {{ so.color }}; background: {{ so.bg }};" style-hover="background: #f3f1ec;">
+                      {{ so.label }}
+                      <sc-if value="{{ so.active }}" hint-placeholder-val="{{ false }}">
+                        <svg width="10" height="8" viewBox="0 0 10 8"><path d="M1 4L3.5 6.5L9 1" stroke="{{ accent }}" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                      </sc-if>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+
+          <sc-if value="{{ isManualSort }}" hint-placeholder-val="{{ false }}">
+            <div style="font-size: 12px; color: #9a9488; margin-bottom: 14px;">Drag the handles to reorder tasks.</div>
+          </sc-if>
+
+          <div style="margin-top: 14px;">
+            <sc-for list="{{ tasks }}" as="item" hint-placeholder-count="6">
+              <div draggable="{{ item.draggable }}" onDragStart="{{ item.onDragStart }}" onDragOver="{{ item.onDragOver }}" onDrop="{{ item.onDrop }}" onDragEnd="{{ item.onDragEnd }}"
+                style="display: flex; flex-direction: column; background: #ffffff; border: 1px solid #e7e3da; border-radius: 10px; margin-bottom: {{ cardMarginBottom }}; padding: {{ cardPadding }}; opacity: {{ item.cardOpacity }}; animation: slideUp 0.3s ease-out {{ item.animDelay }} both; transition: border-color .15s ease, box-shadow .15s ease, opacity .15s ease;"
+                style-hover="box-shadow: 0 2px 10px rgba(20,18,14,0.06); border-color: #d8d3c8;">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <div title="Drag to reorder" style="cursor: {{ item.dragCursor }}; padding-top: 3px; opacity: {{ item.dragHandleOpacity }}; flex-shrink: 0;">
+                    <svg width="10" height="16" viewBox="0 0 10 16"><circle cx="2" cy="2" r="1.6" fill="#c7c2b8"></circle><circle cx="8" cy="2" r="1.6" fill="#c7c2b8"></circle><circle cx="2" cy="8" r="1.6" fill="#c7c2b8"></circle><circle cx="8" cy="8" r="1.6" fill="#c7c2b8"></circle><circle cx="2" cy="14" r="1.6" fill="#c7c2b8"></circle><circle cx="8" cy="14" r="1.6" fill="#c7c2b8"></circle></svg>
+                  </div>
+                  <div onClick="{{ item.onToggle }}" style="width: 21px; height: 21px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; cursor: pointer; display: flex; align-items: center; justify-content: center; border: 2px solid {{ item.checkboxBorder }}; background: {{ item.checkboxBg }}; transition: all .15s ease;">
+                    <sc-if value="{{ item.done }}" hint-placeholder-val="{{ false }}">
+                      <svg width="11" height="9" viewBox="0 0 11 9" style="animation: popCheck 0.25s ease-out;"><path d="M1 4.5L4 7.5L10 1" stroke="#ffffff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    </sc-if>
+                  </div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                      <div style="font-size: 15px; font-weight: 600; text-decoration: {{ item.titleDecoration }}; color: {{ item.titleColor }}; transition: color .2s ease;">{{ item.title }}</div>
+                      <sc-if value="{{ item.hasSubtasks }}" hint-placeholder-val="{{ false }}">
+                        <div onClick="{{ item.onExpand }}" style="cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #8a8478; background: #f3f1ec; padding: 2px 7px; border-radius: 5px; display: flex; align-items: center; gap: 4px;">
+                          {{ item.subtaskLabel }}
+                          <svg width="8" height="8" viewBox="0 0 8 8" style="transform: {{ item.chevronTransform }}; transition: transform .15s ease;"><path d="M1 2.5L4 5.5L7 2.5" stroke="#8a8478" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                        </div>
+                      </sc-if>
+                    </div>
+                    <sc-if value="{{ item.hasDescription }}" hint-placeholder-val="{{ false }}">
+                      <div style="font-size: 13px; color: #8a8478; margin-top: 3px; line-height: 1.4;">{{ item.description }}</div>
+                    </sc-if>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap;">
+                      <sc-if value="{{ item.hasDueDate }}" hint-placeholder-val="{{ false }}">
+                        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11.5px; padding: 3px 8px; border-radius: 5px; background: {{ item.dueBg }}; color: {{ item.dueColor }};">{{ item.dueDateLabel }}</div>
+                      </sc-if>
+                      <div style="font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 5px; background: {{ item.priorityBg }}; color: {{ item.priorityColor }};">{{ item.priorityLabel }}</div>
+                      <sc-for list="{{ item.tagChips }}" as="tag" hint-placeholder-count="2">
+                        <div style="font-size: 11.5px; padding: 3px 9px; border-radius: 5px; background: {{ tag.bg }}; color: {{ tag.fg }};">{{ tag.name }}</div>
+                      </sc-for>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: center; gap: 4px; flex-shrink: 0;">
+                    <div onClick="{{ item.onEdit }}" style="width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.55; transition: opacity .12s ease, background .12s ease;" style-hover="background: #f3f1ec; opacity: 1;">
+                      <svg width="14" height="14" viewBox="0 0 14 14"><path d="M9.5 1.5L12.5 4.5L4.5 12.5H1.5V9.5L9.5 1.5Z" stroke="#77716a" stroke-width="1.3" fill="none" stroke-linejoin="round"></path></svg>
+                    </div>
+                    <div onClick="{{ item.onDelete }}" style="width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.55; transition: opacity .12s ease, background .12s ease;" style-hover="background: #fbe9e6; opacity: 1;">
+                      <svg width="14" height="14" viewBox="0 0 14 14"><path d="M2.5 3.5H11.5M5 3.5V2C5 1.5 5.5 1 6 1H8C8.5 1 9 1.5 9 2V3.5M5.5 6V10.5M8.5 6V10.5M3.5 3.5L4 12C4 12.5 4.5 13 5 13H9C9.5 13 10 12.5 10 12L10.5 3.5" stroke="#c0392b" stroke-width="1.2" fill="none" stroke-linecap="round"></path></svg>
+                    </div>
+                  </div>
+                </div>
+                <sc-if value="{{ item.expanded }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-left: 45px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #e7e3da; display: flex; flex-direction: column; gap: 7px; animation: fadeIn 0.2s ease;">
+                    <sc-for list="{{ item.subtasksDecorated }}" as="sub" hint-placeholder-count="3">
+                      <div style="display: flex; align-items: center; gap: 9px;">
+                        <div onClick="{{ sub.onToggle }}" style="width: 16px; height: 16px; border-radius: 5px; border: 1.6px solid {{ sub.borderColor }}; background: {{ sub.bgColor }}; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                          <sc-if value="{{ sub.done }}" hint-placeholder-val="{{ false }}">
+                            <svg width="8" height="7" viewBox="0 0 8 7"><path d="M1 3.5L3 5.5L7 1" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                          </sc-if>
+                        </div>
+                        <div style="font-size: 13px; color: {{ sub.textColor }}; text-decoration: {{ sub.decoration }};">{{ sub.text }}</div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ showEmptyNoTasks }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align: center; padding: 64px 20px;">
+              <div style="width: 56px; height: 56px; border-radius: 50%; border: 2.5px dashed #d8d3c8; margin: 0 auto 18px;"></div>
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">You're all caught up</div>
+              <div style="font-size: 13.5px; color: #9a9488; margin-bottom: 20px;">Add your first task to get started.</div>
+              <div onClick="{{ openAdd }}" style="display: inline-flex; align-items: center; gap: 7px; padding: 10px 20px; border-radius: 9px; background: {{ accent }}; color: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer;">+ New Task</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showEmptyFiltered }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align: center; padding: 64px 20px;">
+              <div style="font-size: 16px; font-weight: 700; margin-bottom: 6px;">No matching tasks</div>
+              <div style="font-size: 13.5px; color: #9a9488; margin-bottom: 20px;">Try a different search or filter.</div>
+              <div onClick="{{ clearFilters }}" style="display: inline-flex; padding: 9px 18px; border-radius: 8px; border: 1.5px solid #e4e0d8; font-size: 13px; font-weight: 600; cursor: pointer;">Clear filters</div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ showPagination }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 26px;">
+              <div onClick="{{ prevPage }}" style="width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: {{ prevOpacity }}; border: 1.5px solid #e4e0d8;">
+                <svg width="7" height="11" viewBox="0 0 7 11"><path d="M6 1L1.5 5.5L6 10" stroke="#4a453e" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+              <sc-for list="{{ pageButtons }}" as="pb" hint-placeholder-count="3">
+                <div onClick="{{ pb.onClick }}" style="min-width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'IBM Plex Mono', monospace; background: {{ pb.bg }}; color: {{ pb.color }}; padding: 0 4px;">{{ pb.n }}</div>
+              </sc-for>
+              <div onClick="{{ nextPage }}" style="width: 32px; height: 32px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: {{ nextOpacity }}; border: 1.5px solid #e4e0d8;">
+                <svg width="7" height="11" viewBox="0 0 7 11"><path d="M1 1L5.5 5.5L1 10" stroke="#4a453e" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </div>
+            </div>
+          </sc-if>
+
+        </div>
+
+        <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ openAdd }}" style="position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: {{ accent }}; color: #ffffff; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.18); cursor: pointer; z-index: 15;">
+            <svg width="22" height="22" viewBox="0 0 22 22"><rect x="10" y="3" width="2" height="16" fill="#ffffff"></rect><rect x="3" y="10" width="16" height="2" fill="#ffffff"></rect></svg>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ modalOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position: fixed; inset: 0; background: rgba(20,18,14,0.4); z-index: 50; animation: fadeIn 0.15s ease;"></div>
+    <div style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 51; padding: 20px; pointer-events: none;">
+      <div onClick="{{ stopPropagation }}" style="pointer-events: auto; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; background: #ffffff; border-radius: 14px; padding: 28px 30px 26px; animation: scaleIn 0.2s ease-out; box-shadow: 0 20px 60px rgba(20,18,14,0.2);">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px;">
+          <div style="font-size: 19px; font-weight: 700;">{{ modalTitle }}</div>
+          <div onClick="{{ closeModal }}" style="width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; cursor: pointer;" style-hover="background: #f3f1ec;">
+            <svg width="14" height="14" viewBox="0 0 14 14"><path d="M1 1L13 13M13 1L1 13" stroke="#77716a" stroke-width="1.4" stroke-linecap="round"></path></svg>
+          </div>
+        </div>
+        <form onSubmit="{{ saveDraft }}">
+          <input type="text" value="{{ draft.title }}" onChange="{{ setDraftTitle }}" placeholder="Task title" style="width: 100%; font-size: 18px; font-weight: 600; border: none; padding: 8px 0; margin-bottom: 4px;" />
+          <textarea value="{{ draft.description }}" onChange="{{ setDraftDescription }}" placeholder="Add a description..." rows="2" style="width: 100%; border: none; resize: none; font-size: 14px; color: #5c574e; padding: 2px 0 14px; border-bottom: 1px solid #ece8e0; margin-bottom: 18px;"></textarea>
+
+          <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 18px;">
+            <div style="flex: 1; min-width: 160px;">
+              <div style="font-size: 12px; font-weight: 600; color: #77716a; margin-bottom: 8px;">DUE DATE</div>
+              <input type="date" value="{{ draft.dueDate }}" onChange="{{ setDraftDueDate }}" style="width: 100%; padding: 9px 10px; border-radius: 7px; border: 1.5px solid #e4e0d8; font-size: 13.5px;" />
+            </div>
+            <div style="flex: 1; min-width: 220px;">
+              <div style="font-size: 12px; font-weight: 600; color: #77716a; margin-bottom: 8px;">PRIORITY</div>
+              <div style="display: flex; gap: 6px;">
+                <sc-for list="{{ priorityOptionsDraft }}" as="pd" hint-placeholder-count="3">
+                  <div onClick="{{ pd.onClick }}" style="flex: 1; text-align: center; padding: 8px 0; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; background: {{ pd.bg }}; color: {{ pd.color }}; border: 1.5px solid {{ pd.border }}; transition: all .12s ease;">{{ pd.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 18px;">
+            <div style="font-size: 12px; font-weight: 600; color: #77716a; margin-bottom: 8px;">TAGS</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+              <sc-for list="{{ modalTagOptions }}" as="tg" hint-placeholder-count="5">
+                <div onClick="{{ tg.onClick }}" style="font-size: 12.5px; padding: 5px 11px; border-radius: 6px; cursor: pointer; background: {{ tg.bg }}; color: {{ tg.fg }}; border: 1.5px solid {{ tg.border }}; transition: all .12s ease;">{{ tg.name }}</div>
+              </sc-for>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" value="{{ newTagText }}" onChange="{{ setNewTagText }}" placeholder="Add custom tag" style="flex: 1; padding: 8px 11px; border-radius: 7px; border: 1.5px solid #e4e0d8; font-size: 13px;" />
+              <button type="button" onClick="{{ addCustomTag }}" style="padding: 8px 14px; border-radius: 7px; border: 1.5px solid #e4e0d8; background: #ffffff; font-size: 13px; font-weight: 600; cursor: pointer;" style-hover="background: #f3f1ec;">Add</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 22px;">
+            <div style="font-size: 12px; font-weight: 600; color: #77716a; margin-bottom: 8px;">SUBTASKS</div>
+            <sc-for list="{{ draftSubtasks }}" as="s" hint-placeholder-count="2">
+              <div style="display: flex; align-items: center; gap: 9px; margin-bottom: 7px;">
+                <div onClick="{{ s.onToggle }}" style="width: 17px; height: 17px; border-radius: 5px; border: 1.6px solid {{ s.borderColor }}; background: {{ s.bgColor }}; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                  <sc-if value="{{ s.done }}" hint-placeholder-val="{{ false }}"><svg width="8" height="7" viewBox="0 0 8 7"><path d="M1 3.5L3 5.5L7 1" stroke="#ffffff" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></sc-if>
+                </div>
+                <div style="flex: 1; font-size: 13.5px; text-decoration: {{ s.decoration }}; color: {{ s.textColor }};">{{ s.text }}</div>
+                <div onClick="{{ s.onRemove }}" style="width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.5; transition: opacity .12s ease;" style-hover="opacity: 1;">
+                  <svg width="10" height="10" viewBox="0 0 10 10"><path d="M1 1L9 9M9 1L1 9" stroke="#c0392b" stroke-width="1.3" stroke-linecap="round"></path></svg>
+                </div>
+              </div>
+            </sc-for>
+            <div style="display: flex; gap: 8px; margin-top: 8px;">
+              <input type="text" value="{{ newSubtaskText }}" onChange="{{ setNewSubtaskText }}" placeholder="Add a subtask" style="flex: 1; padding: 8px 11px; border-radius: 7px; border: 1.5px solid #e4e0d8; font-size: 13px;" />
+              <button type="button" onClick="{{ addSubtask }}" style="padding: 8px 14px; border-radius: 7px; border: 1.5px solid #e4e0d8; background: #ffffff; font-size: 13px; font-weight: 600; cursor: pointer;" style-hover="background: #f3f1ec;">Add</button>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; padding-top: 16px; border-top: 1px solid #ece8e0;">
+            <sc-if value="{{ isEditMode }}" hint-placeholder-val="{{ false }}">
+              <div onClick="{{ deleteFromModal }}" style="font-size: 13px; font-weight: 600; color: #c0392b; cursor: pointer; padding: 9px 6px;">Delete task</div>
+            </sc-if>
+            <sc-if value="{{ isAddMode }}" hint-placeholder-val="{{ true }}"><div></div></sc-if>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" onClick="{{ closeModal }}" style="padding: 10px 18px; border-radius: 8px; border: 1.5px solid #e4e0d8; background: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #f3f1ec;">Cancel</button>
+              <button type="submit" style="padding: 10px 20px; border-radius: 8px; border: none; background: {{ accent }}; color: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="filter: brightness(0.93);">{{ saveButtonLabel }}</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ deleteConfirmId }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ cancelDelete }}" style="position: fixed; inset: 0; background: rgba(20,18,14,0.4); z-index: 60; animation: fadeIn 0.15s ease;"></div>
+    <div style="position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 61; padding: 20px; pointer-events: none;">
+      <div onClick="{{ stopPropagation }}" style="pointer-events: auto; width: 100%; max-width: 360px; background: #ffffff; border-radius: 14px; padding: 24px; animation: scaleIn 0.18s ease-out; box-shadow: 0 20px 60px rgba(20,18,14,0.2);">
+        <div style="font-size: 16px; font-weight: 700; margin-bottom: 8px;">Delete this task?</div>
+        <div style="font-size: 13.5px; color: #77716a; margin-bottom: 20px; line-height: 1.5;">This can't be undone.</div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button onClick="{{ cancelDelete }}" style="padding: 9px 16px; border-radius: 8px; border: 1.5px solid #e4e0d8; background: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="background: #f3f1ec;">Cancel</button>
+          <button onClick="{{ confirmDelete }}" style="padding: 9px 16px; border-radius: 8px; border: none; background: #c0392b; color: #ffffff; font-size: 13.5px; font-weight: 600; cursor: pointer;" style-hover="filter: brightness(0.92);">Delete</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; bottom: 24px; right: 24px; z-index: 70; background: #22201c; color: #ffffff; padding: 13px 18px; border-radius: 10px; font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 10px; animation: toastIn 0.25s ease-out; box-shadow: 0 10px 30px rgba(0,0,0,0.25);">
+      <div style="width: 7px; height: 7px; border-radius: 50%; background: {{ toastDotColor }}; flex-shrink: 0;"></div>
+      {{ toastMessage }}
+    </div>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ea580c&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#0f766e&quot;,&quot;#4f46e5&quot;,&quot;#ea580c&quot;,&quot;#1a1a1a&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;showStatsBar&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Theme&quot;}}">
+class Component extends DCLogic {
+  SEED_VERSION = 'v2-local-date';
+
+  state = {
+    screen: 'login',
+    authName: '', authEmail: '', authPassword: '', authConfirm: '', authError: '',
+    user: null,
+    tasks: [],
+    view: 'all',
+    search: '',
+    priorityFilter: 'all',
+    tagFilter: null,
+    sortBy: 'dueDate',
+    page: 1,
+    modalOpen: false,
+    modalMode: 'add',
+    draft: null,
+    newSubtaskText: '',
+    newTagText: '',
+    expandedIds: {},
+    deleteConfirmId: null,
+    mobileNavOpen: false,
+    toast: null,
+    dragId: null,
+    dragOverId: null,
+    dragOverTagName: null,
+    tagDropPulse: null,
+    sortMenuOpen: false,
+    isMobile: (typeof window !== 'undefined' && window.innerWidth < 880),
+  };
+
+  componentDidMount() {
+    try {
+      let savedUser = null;
+      try { savedUser = JSON.parse(localStorage.getItem('loop_user') || 'null'); } catch (e1) {}
+      const savedSession = localStorage.getItem('loop_session') === '1';
+      let savedTasks = null;
+      try { savedTasks = JSON.parse(localStorage.getItem('loop_tasks') || 'null'); } catch (e2) {}
+      const seedVersion = localStorage.getItem('loop_seed_version');
+      const seedIsCurrent = seedVersion === this.SEED_VERSION;
+      const hasValidTasks = savedTasks && Array.isArray(savedTasks) && savedTasks.length && seedIsCurrent;
+      const tasks = hasValidTasks ? savedTasks : this.seedTasks();
+      if (!hasValidTasks) {
+        try {
+          localStorage.setItem('loop_tasks', JSON.stringify(tasks));
+          localStorage.setItem('loop_seed_version', this.SEED_VERSION);
+        } catch (e3) {}
+      }
+      const update = { tasks };
+      if (savedSession && savedUser) { update.user = savedUser; update.screen = 'app'; }
+      this.setState(update);
+    } catch (e) {
+      this.setState({ tasks: this.seedTasks() });
+    }
+    this.updateViewport();
+    window.addEventListener('resize', this.updateViewport);
+    window.addEventListener('keydown', this.handleKeyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateViewport);
+    window.removeEventListener('keydown', this.handleKeyDown);
+    clearTimeout(this._toastTimer);
+  }
+
+  updateViewport = () => {
+    const isMobile = window.innerWidth < 880;
+    if (isMobile !== this.state.isMobile) this.setState({ isMobile });
+  };
+
+  handleKeyDown = (e) => {
+    if (e.key === 'Escape') {
+      if (this.state.modalOpen) this.closeModal();
+      else if (this.state.deleteConfirmId) this.cancelDelete();
+    }
+  };
+
+  uid() { return 'id' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8); }
+
+  fmtLocalISO(d) {
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+    return y + '-' + m + '-' + day;
+  }
+
+  todayISO() { const d = new Date(); d.setHours(0, 0, 0, 0); return this.fmtLocalISO(d); }
+
+  seedTasks() {
+    const day = 24 * 60 * 60 * 1000;
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const iso = (offset) => this.fmtLocalISO(new Date(today.getTime() + offset * day));
+    const mk = (o) => Object.assign({ id: this.uid(), done: false, description: '', tags: [], subtasks: [], priority: 'medium', dueDate: null, createdAt: Date.now() }, o);
+    const list = [
+      mk({ title: 'Finalize Q3 onboarding flow', description: 'Walk through the new signup steps with design and confirm copy.', priority: 'high', dueDate: iso(-2), tags: ['Design', 'Work'], subtasks: [{ id: 's1', text: 'Review wireframes', done: true }, { id: 's2', text: 'Update copy', done: true }, { id: 's3', text: 'Get sign-off', done: false }] }),
+      mk({ title: 'Reply to client feedback', description: 'Address comments on the last invoice.', priority: 'medium', dueDate: iso(0), tags: ['Work'] }),
+      mk({ title: 'Morning run', description: '5k around the park.', priority: 'low', dueDate: iso(0), tags: ['Health'], done: true }),
+      mk({ title: 'Prepare investor update', description: 'Monthly metrics and roadmap slide.', priority: 'high', dueDate: iso(1), tags: ['Work', 'Marketing'], subtasks: [{ id: 's4', text: 'Pull metrics', done: true }, { id: 's5', text: 'Draft slides', done: false }] }),
+      mk({ title: 'Book dentist appointment', priority: 'low', dueDate: iso(3), tags: ['Personal'] }),
+      mk({ title: 'Read "Deep Work" chapter 4', priority: 'low', dueDate: iso(4), tags: ['Learning'] }),
+      mk({ title: 'Refactor auth module', description: 'Simplify session handling before the next release.', priority: 'high', dueDate: iso(5), tags: ['Work', 'Design'], subtasks: [{ id: 's6', text: 'Write tests', done: false }, { id: 's7', text: 'Update docs', done: false }] }),
+      mk({ title: 'Plan weekend trip', priority: 'low', dueDate: iso(6), tags: ['Personal'] }),
+      mk({ title: 'Grocery shopping', priority: 'medium', dueDate: iso(-1), tags: ['Home'], done: true }),
+      mk({ title: 'Team retro notes', description: 'Summarize takeaways and send to the team.', priority: 'medium', dueDate: iso(2), tags: ['Work'] }),
+      mk({ title: 'Renew gym membership', priority: 'low', dueDate: iso(10), tags: ['Health'] }),
+      mk({ title: 'Learn CSS grid subgrid', priority: 'low', dueDate: null, tags: ['Learning', 'Design'] }),
+      mk({ title: 'Clean up email inbox', priority: 'medium', dueDate: iso(-3), tags: ['Work'], done: true }),
+      mk({ title: 'Update resume', priority: 'low', dueDate: iso(20), tags: ['Personal'] }),
+      mk({ title: 'Design system audit', description: 'Check spacing and color tokens across the product.', priority: 'high', dueDate: iso(8), tags: ['Design', 'Work'], subtasks: [{ id: 's8', text: 'Audit colors', done: false }, { id: 's9', text: 'Audit spacing', done: false }, { id: 's10', text: 'Report findings', done: false }] }),
+      mk({ title: 'Water the plants', priority: 'low', dueDate: iso(0), tags: ['Home'], done: true }),
+    ];
+    return list.map((t, i) => ({ ...t, order: i }));
+  }
+
+  // ---- auth ----
+  setAuthName = (e) => this.setState({ authName: e.target.value, authError: '' });
+  setAuthEmail = (e) => this.setState({ authEmail: e.target.value, authError: '' });
+  setAuthPassword = (e) => this.setState({ authPassword: e.target.value, authError: '' });
+  setAuthConfirm = (e) => this.setState({ authConfirm: e.target.value, authError: '' });
+
+  goToSignup = () => this.setState({ screen: 'signup', authError: '', authName: '', authPassword: '', authConfirm: '' });
+  goToLogin = () => this.setState({ screen: 'login', authError: '', authPassword: '' });
+
+  submitLogin = (e) => {
+    e.preventDefault();
+    const email = this.state.authEmail.trim();
+    const pass = this.state.authPassword;
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { this.setState({ authError: 'Enter a valid email address.' }); return; }
+    if (!pass) { this.setState({ authError: 'Enter your password.' }); return; }
+    let savedUser = null;
+    try { savedUser = JSON.parse(localStorage.getItem('loop_user') || 'null'); } catch (e2) {}
+    const name = (savedUser && savedUser.email === email && savedUser.name) ? savedUser.name : email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    const user = { name, email };
+    try { localStorage.setItem('loop_user', JSON.stringify(user)); localStorage.setItem('loop_session', '1'); } catch (e3) {}
+    this.setState({ user, screen: 'app', authPassword: '' });
+    this.showToast('Welcome back, ' + name.split(' ')[0] + '!');
+  };
+
+  submitSignup = (e) => {
+    e.preventDefault();
+    const name = this.state.authName.trim();
+    const email = this.state.authEmail.trim();
+    const pass = this.state.authPassword;
+    const confirm = this.state.authConfirm;
+    if (!name) { this.setState({ authError: 'Enter your name.' }); return; }
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) { this.setState({ authError: 'Enter a valid email address.' }); return; }
+    if (pass.length < 6) { this.setState({ authError: 'Password must be at least 6 characters.' }); return; }
+    if (pass !== confirm) { this.setState({ authError: 'Passwords do not match.' }); return; }
+    const user = { name, email };
+    try { localStorage.setItem('loop_user', JSON.stringify(user)); localStorage.setItem('loop_session', '1'); } catch (e3) {}
+    this.setState({ user, screen: 'app' });
+    this.showToast('Account created. Welcome, ' + name.split(' ')[0] + '!');
+  };
+
+  logout = () => {
+    try { localStorage.setItem('loop_session', '0'); } catch (e) {}
+    this.setState({ screen: 'login', authEmail: '', authPassword: '', authName: '', authConfirm: '', mobileNavOpen: false });
+  };
+
+  showToast = (message, type) => {
+    const id = Date.now();
+    this.setState({ toast: { id, message, type: type || 'success' } });
+    clearTimeout(this._toastTimer);
+    this._toastTimer = setTimeout(() => {
+      this.setState(s => (s.toast && s.toast.id === id) ? { toast: null } : {});
+    }, 2600);
+  };
+
+  persistTasks = (tasks) => { try { localStorage.setItem('loop_tasks', JSON.stringify(tasks)); } catch (e) {} };
+
+  // ---- filters / nav ----
+  setView = (view) => this.setState({ view, page: 1, mobileNavOpen: false });
+  setSearch = (e) => this.setState({ search: e.target.value, page: 1 });
+  setSortByEvt = (e) => this.setState({ sortBy: e.target.value, page: 1 });
+  toggleSortMenu = () => this.setState(s => ({ sortMenuOpen: !s.sortMenuOpen }));
+  closeSortMenu = () => this.setState({ sortMenuOpen: false });
+  selectSort = (key) => this.setState({ sortBy: key, page: 1, sortMenuOpen: false });
+
+  sortOptionsList() { return [{ key: 'dueDate', label: 'Due date' }, { key: 'priority', label: 'Priority' }, { key: 'alpha', label: 'A\u2013Z' }, { key: 'newest', label: 'Newest' }, { key: 'manual', label: 'Manual' }]; }
+
+  sortOptionsDecorated() {
+    const accent = this.props.accentColor || '#0f766e';
+    return this.sortOptionsList().map(o => {
+      const active = this.state.sortBy === o.key;
+      return { label: o.label, active, onClick: () => this.selectSort(o.key), color: active ? accent : '#4a453e', weight: active ? 700 : 500, bg: active ? accent + '10' : 'transparent' };
+    });
+  }
+
+  sortLabel() {
+    const found = this.sortOptionsList().find(o => o.key === this.state.sortBy);
+    return found ? found.label : 'Due date';
+  }
+  setPriorityFilter = (key) => this.setState({ priorityFilter: key, page: 1 });
+  setTagFilter = (tag) => this.setState(s => ({ tagFilter: s.tagFilter === tag ? null : tag, page: 1, mobileNavOpen: false }));
+  clearFilters = () => this.setState({ search: '', priorityFilter: 'all', tagFilter: null, page: 1 });
+  goToPage = (p) => this.setState({ page: p });
+  prevPage = () => { if (this.state.page > 1) this.setState(s => ({ page: s.page - 1 })); };
+  nextPage = () => { if (this.state.page < this._totalPages) this.setState(s => ({ page: s.page + 1 })); };
+  openMobileNav = () => this.setState({ mobileNavOpen: true });
+  closeMobileNav = () => this.setState({ mobileNavOpen: false });
+  stopPropagation = (e) => e.stopPropagation();
+
+  getVisibleTasks() {
+    const { tasks, view, search, priorityFilter, tagFilter, sortBy } = this.state;
+    const todayStr = this.todayISO();
+    let list = tasks.slice();
+    if (view === 'today') list = list.filter(t => !t.done && t.dueDate === todayStr);
+    else if (view === 'upcoming') list = list.filter(t => !t.done && t.dueDate && t.dueDate > todayStr);
+    else if (view === 'completed') list = list.filter(t => t.done);
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(t => t.title.toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q));
+    }
+    if (priorityFilter !== 'all') list = list.filter(t => t.priority === priorityFilter);
+    if (tagFilter) list = list.filter(t => t.tags.includes(tagFilter));
+    const rank = { high: 0, medium: 1, low: 2 };
+    if (sortBy === 'manual') list.sort((a, b) => a.order - b.order);
+    else if (sortBy === 'dueDate') list.sort((a, b) => { if (!a.dueDate && !b.dueDate) return 0; if (!a.dueDate) return 1; if (!b.dueDate) return -1; return a.dueDate.localeCompare(b.dueDate); });
+    else if (sortBy === 'priority') list.sort((a, b) => rank[a.priority] - rank[b.priority]);
+    else if (sortBy === 'alpha') list.sort((a, b) => a.title.localeCompare(b.title));
+    else if (sortBy === 'newest') list.sort((a, b) => b.createdAt - a.createdAt);
+    return list;
+  }
+
+  computeCounts() {
+    const todayStr = this.todayISO();
+    const tasks = this.state.tasks;
+    return {
+      total: tasks.length,
+      completed: tasks.filter(t => t.done).length,
+      today: tasks.filter(t => !t.done && t.dueDate === todayStr).length,
+      upcoming: tasks.filter(t => !t.done && t.dueDate && t.dueDate > todayStr).length,
+    };
+  }
+
+  navItems(counts) {
+    const accent = this.props.accentColor || '#0f766e';
+    const items = [
+      { key: 'all', label: 'All Tasks', count: counts.total },
+      { key: 'today', label: 'Today', count: counts.today },
+      { key: 'upcoming', label: 'Upcoming', count: counts.upcoming },
+      { key: 'completed', label: 'Completed', count: counts.completed },
+    ];
+    return items.map(it => {
+      const active = this.state.view === it.key;
+      return { label: it.label, count: it.count, onClick: () => this.setView(it.key), bg: active ? accent + '17' : 'transparent', color: active ? accent : '#4a453e', weight: active ? 700 : 500 };
+    });
+  }
+
+  tagPalette() {
+    return [
+      { bg: '#e7edfb', fg: '#3555a8' },
+      { bg: '#f2e9fb', fg: '#7440ab' },
+      { bg: '#e5f4ea', fg: '#2f7d4c' },
+      { bg: '#faeee2', fg: '#a15b25' },
+      { bg: '#e3f3f4', fg: '#2a7d84' },
+      { bg: '#fbe9f1', fg: '#a34472' },
+    ];
+  }
+  tagStyle(tag) {
+    const palette = this.tagPalette();
+    let hash = 0;
+    for (let i = 0; i < tag.length; i++) hash = (hash * 31 + tag.charCodeAt(i)) >>> 0;
+    return palette[hash % palette.length];
+  }
+
+  allTagChips() {
+    const accent = this.props.accentColor || '#0f766e';
+    const counts = {};
+    this.state.tasks.forEach(t => t.tags.forEach(tag => { counts[tag] = (counts[tag] || 0) + 1; }));
+    const names = Object.keys(counts).sort();
+    return names.map(name => {
+      const style = this.tagStyle(name);
+      const active = this.state.tagFilter === name;
+      const isDragTarget = this.state.dragOverTagName === name;
+      const isPulse = this.state.tagDropPulse === name;
+      let bg = active ? style.bg : 'transparent';
+      if (isDragTarget) bg = accent + '22';
+      if (isPulse) bg = accent + '38';
+      return {
+        name, count: counts[name], fg: style.fg, navBg: bg,
+        ringStyle: isDragTarget ? ('0 0 0 2px ' + accent) : 'none',
+        scaleStyle: isDragTarget ? 'scale(1.035)' : 'scale(1)',
+        pulseAnim: isPulse ? 'tagPulse 0.45s ease-out' : 'none',
+        onClick: () => this.setTagFilter(name),
+        onDragOver: (e) => { e.preventDefault(); if (this.state.dragId != null && this.state.dragOverTagName !== name) this.setState({ dragOverTagName: name }); },
+        onDragLeave: () => { if (this.state.dragOverTagName === name) this.setState({ dragOverTagName: null }); },
+        onDrop: (e) => { e.preventDefault(); this.dropTaskOnTag(name); },
+      };
+    });
+  }
+
+  dropTaskOnTag = (tagName) => {
+    const id = this.state.dragId;
+    if (id == null) { this.setState({ dragOverTagName: null }); return; }
+    const tasks = this.state.tasks.map(t => t.id === id ? { ...t, tags: [tagName] } : t);
+    this.setState({ tasks, dragId: null, dragOverId: null, dragOverTagName: null, tagDropPulse: tagName });
+    this.persistTasks(tasks);
+    this.showToast('Tagged as "' + tagName + '"');
+    setTimeout(() => { this.setState(s => s.tagDropPulse === tagName ? { tagDropPulse: null } : {}); }, 500);
+  };
+
+  priorityMeta(p) {
+    if (p === 'high') return { label: 'High', color: '#dc4b34', bg: '#dc4b3414' };
+    if (p === 'low') return { label: 'Low', color: '#3b82c4', bg: '#3b82c414' };
+    return { label: 'Medium', color: '#c07d1f', bg: '#c07d1f14' };
+  }
+
+  priorityOptions() {
+    const opts = [
+      { key: 'all', label: 'All', color: '#22201c' },
+      { key: 'low', label: 'Low', color: '#3b82c4' },
+      { key: 'medium', label: 'Medium', color: '#c07d1f' },
+      { key: 'high', label: 'High', color: '#dc4b34' },
+    ];
+    return opts.map(o => {
+      const active = this.state.priorityFilter === o.key;
+      return { label: o.label, onClick: () => this.setPriorityFilter(o.key), bg: active ? '#ffffff' : 'transparent', color: active ? o.color : '#8a8478', shadow: active ? '0 1px 3px rgba(20,18,14,0.10)' : 'none' };
+    });
+  }
+
+  dueLabel(dueDate) {
+    if (!dueDate) return null;
+    const today = this.todayISO();
+    const d = new Date(dueDate + 'T00:00:00');
+    const t = new Date(today + 'T00:00:00');
+    const diff = Math.round((d - t) / 86400000);
+    if (diff === 0) return 'Today';
+    if (diff === 1) return 'Tomorrow';
+    if (diff === -1) return 'Yesterday';
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  decorate(t, idx) {
+    const accent = this.props.accentColor || '#0f766e';
+    const todayStr = this.todayISO();
+    const pm = this.priorityMeta(t.priority);
+    const subtotal = t.subtasks.length;
+    const subdone = t.subtasks.filter(s => s.done).length;
+    const dueDateLabel = this.dueLabel(t.dueDate);
+    const overdue = !!(t.dueDate && t.dueDate < todayStr && !t.done);
+    const isToday = t.dueDate === todayStr;
+    let dueBg = '#f0ede6', dueColor = '#77716a';
+    if (overdue) { dueBg = '#fbe9e6'; dueColor = '#c0392b'; }
+    else if (isToday) { dueBg = '#fdf1de'; dueColor = '#a15b25'; }
+    const dragEnabled = this.state.sortBy === 'manual';
+    const expanded = !!this.state.expandedIds[t.id];
+    return {
+      id: t.id,
+      title: t.title,
+      description: t.description,
+      hasDescription: !!(t.description && t.description.trim()),
+      done: t.done,
+      titleColor: t.done ? '#a39d90' : '#22201c',
+      titleDecoration: t.done ? 'line-through' : 'none',
+      checkboxBg: t.done ? accent : '#ffffff',
+      checkboxBorder: t.done ? accent : '#d6d2c7',
+      hasDueDate: !!t.dueDate,
+      dueDateLabel: dueDateLabel,
+      dueBg, dueColor,
+      priorityLabel: pm.label, priorityColor: pm.color, priorityBg: pm.bg,
+      tagChips: t.tags.map(tag => { const s = this.tagStyle(tag); return { name: tag, bg: s.bg, fg: s.fg }; }),
+      hasSubtasks: subtotal > 0,
+      subtaskLabel: subtotal > 0 ? (subdone + '/' + subtotal) : '',
+      expanded,
+      chevronTransform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+      onExpand: () => this.toggleExpand(t.id),
+      onToggle: () => this.toggleComplete(t.id),
+      onEdit: () => this.openEdit(t),
+      onDelete: () => this.askDelete(t.id),
+      draggable: dragEnabled,
+      dragCursor: dragEnabled ? 'grab' : 'default',
+      dragHandleOpacity: dragEnabled ? 1 : 0.3,
+      cardOpacity: this.state.dragId === t.id ? 0.45 : 1,
+      onDragStart: (e) => { e.dataTransfer.effectAllowed = 'move'; this.setState({ dragId: t.id }); },
+      onDragOver: (e) => { e.preventDefault(); if (this.state.dragOverId !== t.id) this.setState({ dragOverId: t.id }); },
+      onDrop: (e) => { e.preventDefault(); this.commitReorder(); },
+      onDragEnd: () => this.commitReorder(),
+      animDelay: (idx % 8) * 0.03 + 's',
+      subtasksDecorated: t.subtasks.map(s => ({
+        id: s.id, text: s.text, done: s.done,
+        borderColor: s.done ? accent : '#d6d2c7',
+        bgColor: s.done ? accent : '#ffffff',
+        textColor: s.done ? '#a39d90' : '#4a453e',
+        decoration: s.done ? 'line-through' : 'none',
+        onToggle: () => this.toggleSubtask(t.id, s.id),
+      })),
+    };
+  }
+
+  commitReorder = () => {
+    const { dragId, dragOverId, tasks } = this.state;
+    if (dragId != null && dragOverId != null && dragId !== dragOverId) {
+      const ordered = [...tasks].sort((a, b) => a.order - b.order);
+      const fromIdx = ordered.findIndex(t => t.id === dragId);
+      const toIdx = ordered.findIndex(t => t.id === dragOverId);
+      if (fromIdx > -1 && toIdx > -1) {
+        const moved = ordered.splice(fromIdx, 1)[0];
+        ordered.splice(toIdx, 0, moved);
+        const reordered = ordered.map((t, i) => ({ ...t, order: i }));
+        this.setState({ tasks: reordered, dragId: null, dragOverId: null, dragOverTagName: null });
+        this.persistTasks(reordered);
+        return;
+      }
+    }
+    this.setState({ dragId: null, dragOverId: null, dragOverTagName: null });
+  };
+
+  toggleComplete = (id) => {
+    const tasks = this.state.tasks.map(t => t.id === id ? { ...t, done: !t.done } : t);
+    this.setState({ tasks });
+    this.persistTasks(tasks);
+  };
+
+  toggleSubtask = (taskId, subId) => {
+    const tasks = this.state.tasks.map(t => {
+      if (t.id !== taskId) return t;
+      return { ...t, subtasks: t.subtasks.map(s => s.id === subId ? { ...s, done: !s.done } : s) };
+    });
+    this.setState({ tasks });
+    this.persistTasks(tasks);
+  };
+
+  toggleExpand = (id) => this.setState(s => ({ expandedIds: { ...s.expandedIds, [id]: !s.expandedIds[id] } }));
+
+  askDelete = (id) => this.setState({ deleteConfirmId: id });
+  cancelDelete = () => this.setState({ deleteConfirmId: null });
+  confirmDelete = () => {
+    const id = this.state.deleteConfirmId;
+    const tasks = this.state.tasks.filter(t => t.id !== id);
+    this.setState({ tasks, deleteConfirmId: null });
+    this.persistTasks(tasks);
+    this.showToast('Task deleted', 'danger');
+  };
+
+  // ---- modal / draft ----
+  openAdd = () => this.setState({ modalOpen: true, modalMode: 'add', draft: { id: null, title: '', description: '', priority: 'medium', dueDate: '', tags: [], subtasks: [], done: false, order: 0, createdAt: Date.now() }, newSubtaskText: '', newTagText: '', mobileNavOpen: false });
+  openEdit = (task) => {
+    const cloned = JSON.parse(JSON.stringify(task));
+    cloned.dueDate = cloned.dueDate || '';
+    this.setState({ modalOpen: true, modalMode: 'edit', draft: cloned, newSubtaskText: '', newTagText: '' });
+  };
+  closeModal = () => this.setState({ modalOpen: false, draft: null });
+  deleteFromModal = () => { const id = this.state.draft.id; this.setState({ modalOpen: false, draft: null, deleteConfirmId: id }); };
+
+  setDraftField = (field, value) => this.setState(s => ({ draft: { ...s.draft, [field]: value } }));
+  setDraftTitle = (e) => this.setDraftField('title', e.target.value);
+  setDraftDescription = (e) => this.setDraftField('description', e.target.value);
+  setDraftDueDate = (e) => this.setDraftField('dueDate', e.target.value);
+  setDraftPriority = (p) => this.setDraftField('priority', p);
+  setNewTagText = (e) => this.setState({ newTagText: e.target.value });
+  setNewSubtaskText = (e) => this.setState({ newSubtaskText: e.target.value });
+
+  toggleDraftTag = (tag) => this.setState(s => {
+    const tags = s.draft.tags.includes(tag) ? s.draft.tags.filter(x => x !== tag) : [...s.draft.tags, tag];
+    return { draft: { ...s.draft, tags } };
+  });
+
+  addCustomTag = () => {
+    const tag = this.state.newTagText.trim();
+    if (!tag) return;
+    this.setState(s => ({ draft: { ...s.draft, tags: s.draft.tags.includes(tag) ? s.draft.tags : [...s.draft.tags, tag] }, newTagText: '' }));
+  };
+
+  addSubtask = () => {
+    const text = this.state.newSubtaskText.trim();
+    if (!text) return;
+    this.setState(s => ({ draft: { ...s.draft, subtasks: [...s.draft.subtasks, { id: this.uid(), text, done: false }] }, newSubtaskText: '' }));
+  };
+  removeSubtask = (id) => this.setState(s => ({ draft: { ...s.draft, subtasks: s.draft.subtasks.filter(x => x.id !== id) } }));
+  toggleDraftSubtask = (id) => this.setState(s => ({ draft: { ...s.draft, subtasks: s.draft.subtasks.map(x => x.id === id ? { ...x, done: !x.done } : x) } }));
+
+  presetTags() { return ['Work', 'Personal', 'Design', 'Marketing', 'Learning', 'Health', 'Home']; }
+
+  modalTagOptions() {
+    if (!this.state.draft) return [];
+    const used = Array.from(new Set(this.state.tasks.flatMap(t => t.tags)));
+    const names = Array.from(new Set([...this.presetTags(), ...used])).sort();
+    return names.map(name => {
+      const selected = this.state.draft.tags.includes(name);
+      const style = this.tagStyle(name);
+      return { name, bg: selected ? style.bg : '#f0ede6', fg: selected ? style.fg : '#77716a', border: selected ? style.fg : 'transparent', onClick: () => this.toggleDraftTag(name) };
+    });
+  }
+
+  priorityOptionsDraft() {
+    if (!this.state.draft) return [];
+    const opts = [
+      { key: 'low', label: 'Low', color: '#3b82c4' },
+      { key: 'medium', label: 'Medium', color: '#c07d1f' },
+      { key: 'high', label: 'High', color: '#dc4b34' },
+    ];
+    return opts.map(o => {
+      const active = this.state.draft.priority === o.key;
+      return { label: o.label, onClick: () => this.setDraftPriority(o.key), bg: active ? o.color + '1a' : '#f7f5f0', color: active ? o.color : '#9a9488', border: active ? o.color : '#e4e0d8' };
+    });
+  }
+
+  draftSubtasks() {
+    if (!this.state.draft) return [];
+    const accent = this.props.accentColor || '#0f766e';
+    return this.state.draft.subtasks.map(s => ({
+      id: s.id, text: s.text, done: s.done,
+      borderColor: s.done ? accent : '#d6d2c7',
+      bgColor: s.done ? accent : '#ffffff',
+      textColor: s.done ? '#a39d90' : '#4a453e',
+      decoration: s.done ? 'line-through' : 'none',
+      onToggle: () => this.toggleDraftSubtask(s.id),
+      onRemove: () => this.removeSubtask(s.id),
+    }));
+  }
+
+  saveDraft = (e) => {
+    if (e) e.preventDefault();
+    const d = this.state.draft;
+    if (!d.title.trim()) { this.showToast('Give the task a title', 'danger'); return; }
+    let tasks;
+    if (this.state.modalMode === 'add') {
+      const maxOrder = this.state.tasks.length ? Math.max(...this.state.tasks.map(t => t.order)) : -1;
+      const newTask = { ...d, id: this.uid(), order: maxOrder + 1, createdAt: Date.now() };
+      tasks = [newTask, ...this.state.tasks];
+    } else {
+      tasks = this.state.tasks.map(t => t.id === d.id ? { ...d } : t);
+    }
+    this.setState({ tasks, modalOpen: false, draft: null });
+    this.persistTasks(tasks);
+    this.showToast(this.state.modalMode === 'add' ? 'Task added' : 'Task updated');
+  };
+
+  viewTitle() {
+    const map = { all: 'All Tasks', today: 'Today', upcoming: 'Upcoming', completed: 'Completed' };
+    return map[this.state.view] || 'All Tasks';
+  }
+
+  renderVals() {
+    const accent = this.props.accentColor || '#0f766e';
+    const density = this.props.density === 'compact' ? 'compact' : 'comfortable';
+    const pageSize = density === 'compact' ? 10 : 6;
+    const showStatsBar = this.props.showStatsBar !== false;
+
+    const counts = this.computeCounts();
+    const filtered = this.getVisibleTasks();
+    const total = filtered.length;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    const page = Math.min(this.state.page, totalPages);
+    this._totalPages = totalPages;
+    const pageItems = filtered.slice((page - 1) * pageSize, (page - 1) * pageSize + pageSize).map((t, i) => this.decorate(t, i));
+
+    const pageButtons = Array.from({ length: totalPages }, (_, i) => i + 1).map(n => ({
+      n, onClick: () => this.goToPage(n), bg: n === page ? accent : 'transparent', color: n === page ? '#ffffff' : '#4a453e',
+    }));
+
+    const isMobile = this.state.isMobile;
+    const isDesktop = !isMobile;
+    const screen = this.state.screen;
+    const tagChipsAll = this.allTagChips();
+
+    return {
+      accent,
+      accentSofter: accent + '0c',
+      isAuthScreen: screen !== 'app',
+      isAppScreen: screen === 'app',
+      isLoginScreen: screen === 'login',
+      isSignupScreen: screen === 'signup',
+      authName: this.state.authName,
+      authEmail: this.state.authEmail,
+      authPassword: this.state.authPassword,
+      authConfirm: this.state.authConfirm,
+      authError: this.state.authError,
+      hasAuthError: !!this.state.authError,
+      setAuthName: this.setAuthName,
+      setAuthEmail: this.setAuthEmail,
+      setAuthPassword: this.setAuthPassword,
+      setAuthConfirm: this.setAuthConfirm,
+      submitLogin: this.submitLogin,
+      submitSignup: this.submitSignup,
+      goToLogin: this.goToLogin,
+      goToSignup: this.goToSignup,
+
+      isMobile, isDesktop,
+      showDesktopSidebar: isDesktop,
+      showMobileDrawer: isMobile && this.state.mobileNavOpen,
+      openMobileNav: this.openMobileNav,
+      closeMobileNav: this.closeMobileNav,
+
+      navItems: this.navItems(counts),
+      allTagChips: tagChipsAll,
+      hasTags: tagChipsAll.length > 0,
+      hasNoTags: tagChipsAll.length === 0,
+      userInitial: this.state.user ? this.state.user.name.charAt(0).toUpperCase() : '?',
+      userName: this.state.user ? this.state.user.name : '',
+      userEmail: this.state.user ? this.state.user.email : '',
+      logout: this.logout,
+      openAdd: this.openAdd,
+
+      viewTitle: this.viewTitle(),
+      contentPadding: isMobile ? '20px 16px 110px' : '36px 40px 48px',
+      showStatsBar,
+      completedCount: counts.completed,
+      totalCount: counts.total,
+      completionPercent: counts.total ? Math.round(counts.completed / counts.total * 100) : 0,
+
+      search: this.state.search,
+      setSearch: this.setSearch,
+      priorityOptions: this.priorityOptions(),
+      sortBy: this.state.sortBy,
+      setSortByEvt: this.setSortByEvt,
+      isManualSort: this.state.sortBy === 'manual',
+      sortMenuOpen: this.state.sortMenuOpen,
+      toggleSortMenu: this.toggleSortMenu,
+      closeSortMenu: this.closeSortMenu,
+      sortLabel: this.sortLabel(),
+      sortOptionsDecorated: this.sortOptionsDecorated(),
+      sortChevronTransform: this.state.sortMenuOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+
+      tasks: pageItems,
+      cardPadding: density === 'compact' ? '10px 14px' : '14px 16px',
+      cardMarginBottom: density === 'compact' ? '6px' : '10px',
+
+      hasFilteredTasks: total > 0,
+      showEmptyNoTasks: counts.total === 0,
+      showEmptyFiltered: counts.total > 0 && total === 0,
+      clearFilters: this.clearFilters,
+
+      showPagination: totalPages > 1,
+      pageButtons,
+      prevPage: this.prevPage,
+      nextPage: this.nextPage,
+      prevOpacity: page <= 1 ? 0.35 : 1,
+      nextOpacity: page >= totalPages ? 0.35 : 1,
+
+      modalOpen: this.state.modalOpen,
+      modalTitle: this.state.modalMode === 'add' ? 'New task' : 'Edit task',
+      isAddMode: this.state.modalMode === 'add',
+      isEditMode: this.state.modalMode === 'edit',
+      saveButtonLabel: this.state.modalMode === 'add' ? 'Add task' : 'Save changes',
+      draft: this.state.draft || { title: '', description: '', dueDate: '', tags: [], subtasks: [] },
+      setDraftTitle: this.setDraftTitle,
+      setDraftDescription: this.setDraftDescription,
+      setDraftDueDate: this.setDraftDueDate,
+      priorityOptionsDraft: this.priorityOptionsDraft(),
+      modalTagOptions: this.modalTagOptions(),
+      newTagText: this.state.newTagText,
+      setNewTagText: this.setNewTagText,
+      addCustomTag: this.addCustomTag,
+      draftSubtasks: this.draftSubtasks(),
+      newSubtaskText: this.state.newSubtaskText,
+      setNewSubtaskText: this.setNewSubtaskText,
+      addSubtask: this.addSubtask,
+      saveDraft: this.saveDraft,
+      closeModal: this.closeModal,
+      deleteFromModal: this.deleteFromModal,
+      stopPropagation: this.stopPropagation,
+
+      deleteConfirmId: this.state.deleteConfirmId,
+      cancelDelete: this.cancelDelete,
+      confirmDelete: this.confirmDelete,
+
+      hasToast: !!this.state.toast,
+      toastMessage: this.state.toast ? this.state.toast.message : '',
+      toastDotColor: this.state.toast && this.state.toast.type === 'danger' ? '#e57373' : accent,
+    };
+  }
+}
+</script>
+</body>
+</html>
